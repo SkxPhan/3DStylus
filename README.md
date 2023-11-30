@@ -1,8 +1,8 @@
-# 3DStylus (ongoing)
+# 3DStylus - 3D Pointer and Simple Stroke Recognition (ongoing)
 
 ## Overview
 
-This repository hosts a C++ application for 3D Pointer and Simple Stroke Recognition (3DStylus) using depth cameras.
+This repository hosts a C++ application for 3D Pointer and Simple Stroke Recognition using depth cameras.
 
 ## Features
 
