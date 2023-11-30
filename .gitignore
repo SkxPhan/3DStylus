@@ -1,11 +1,67 @@
-CMakeLists.txt.user
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.o
+*.a
+*.so
+
+# Compiled Dynamic libraries (Windows)
+*.dll
+*.dylib
+*.pdb
+
+# Compiled Static libraries (Windows)
+*.lib
+
+# Executables
+*.exe
+*.out
+
+# CMake files and directories
+CMakeFiles/
 CMakeCache.txt
-CMakeFiles
-CMakeScripts
-Testing
-Makefile
-cmake_install.cmake
-install_manifest.txt
-compile_commands.json
-CTestTestfile.cmake
-_deps
+CMakeScripts/
+CMakeTmp/
+
+# Visual Studio Code directories
+.vscode/
+
+# Mac OS X directories
+.DS_Store
+
+# Compiled files
+*.suo
+*.log
+*.dat
+*.dSYM/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Mono Auto Generated Files
+mono_crash.*
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# VS Code directories
+.vscode/
+
+# macOS
+.DS_Store
+
+# Linux
+*~
+
+# Windows
+Thumbs.db
+Desktop.ini
