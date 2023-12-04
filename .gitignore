@@ -65,3 +65,6 @@ $RECYCLE.BIN/
 # Windows
 Thumbs.db
 Desktop.ini
+
+# C++ build folder
+/build/
