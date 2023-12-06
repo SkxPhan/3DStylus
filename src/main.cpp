@@ -19,11 +19,9 @@ int main()
 
     int delay = 1000 / 30;
 
-    cv::Mat image;
-
     for (const cv::String &imageFilename : imageFilenames)
     {
-        image = cv::imread(imageFilename);
+        cv::Mat image = cv::imread(imageFilename);
         cv::imshow("Images", image);
         cv::waitKey(delay);
     }
