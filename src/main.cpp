@@ -20,7 +20,7 @@ public:
 class VideoPlayer : public MediaPlayer
 {
 public:
-    VideoPlayer(const std::string &directoryPath, int frameRate) : directoryPath(directoryPath), frameRate(frameRate) {}
+    VideoPlayer(std::string_view directoryPath, int frameRate) : directoryPath(directoryPath), frameRate(frameRate) {}
 
     void playDepthVideo()
     {
@@ -67,29 +67,3 @@ int main()
 
     return 0;
 }
-
-// int main()
-// {
-//     std::string directoryPath = "../data/ds325/gestures_two_hands/";
-
-//     cv::String imagePattern = directoryPath + "*_depth.tiff";
-
-//     std::vector<cv::String> imageFilenames;
-
-//     cv::glob(imagePattern, imageFilenames, false);
-
-//     if (imageFilenames.empty())
-//     {
-//         std::cerr << "Error: No images found in the specified directory.\n";
-//         return 1;
-//     }
-
-//     int delay = 1000 / 30;
-
-//     for (const cv::String &imageFilename : imageFilenames)
-//     {
-//         cv::Mat image = cv::imread(imageFilename);
-//         cv::imshow("Images", image);
-//         cv::waitKey(delay);
-//     }
-// }
