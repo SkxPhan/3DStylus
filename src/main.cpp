@@ -19,13 +19,15 @@ public:
 
 class VideoPlayer : public MediaPlayer
 {
+private:
+    cv::String imagePattern;
+    int frameRate;
+
 public:
-    VideoPlayer(std::string_view directoryPath, int frameRate) : directoryPath(directoryPath), frameRate(frameRate) {}
+    VideoPlayer(cv::String imagePattern, int frameRate) : imagePattern(imagePattern), frameRate(frameRate) {}
 
     void playDepthVideo()
     {
-        cv::String imagePattern = directoryPath + "*_depth.tiff";
-
         std::vector<cv::String> imageFilenames;
         cv::glob(imagePattern, imageFilenames);
 
@@ -37,13 +39,13 @@ public:
 
         ImageDisplay imageDisplay;
 
-        int delay = 1000 / frameRate;
+        int delayInMS = 1000 / frameRate;
 
         for (const cv::String &imageFilename : imageFilenames)
         {
             cv::Mat image{cv::imread(imageFilename)};
             imageDisplay.play(image);
-            cv::waitKey(delay);
+            cv::waitKey(delayInMS);
         }
     }
 
@@ -51,18 +53,16 @@ public:
     {
         cv::imshow("Player", frame);
     }
-
-private:
-    std::string directoryPath;
-    int frameRate;
 };
 
 int main()
 {
     std::string directoryPath = "../data/ds325/gestures_two_hands/";
+    std::string filenamePattern = "*_depth.tiff";
+    cv::String imagePattern = directoryPath + filenamePattern;
     int frameRate = 30;
 
-    VideoPlayer videoPlayer(directoryPath, frameRate);
+    VideoPlayer videoPlayer(imagePattern, frameRate);
     videoPlayer.playDepthVideo();
 
     return 0;
