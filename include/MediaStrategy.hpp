@@ -3,11 +3,10 @@
 
 #include <string>
 
-class MediaStrategy
-{
-public:
-    virtual void play(const std::string &path) = 0;
-    virtual ~MediaStrategy() = default;
+class MediaStrategy {
+ public:
+  virtual void play(const std::string &path) = 0;
+  virtual ~MediaStrategy() = default;
 };
 
-#endif // MEDIASTRATEGY_HPP
+#endif  // MEDIASTRATEGY_HPP

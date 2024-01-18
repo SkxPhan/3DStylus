@@ -3,11 +3,10 @@
 
 #include "MediaStrategy.hpp"
 
-class ImagePlayer : public MediaStrategy
-{
-public:
-    ImagePlayer();
-    void play(const std::string &path) override;
+class ImagePlayer : public MediaStrategy {
+ public:
+  ImagePlayer();
+  void play(const std::string &path) override;
 };
 
-#endif // IMAGEPLAYER_HPP
+#endif  // IMAGEPLAYER_HPP
