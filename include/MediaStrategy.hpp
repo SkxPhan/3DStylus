@@ -1,7 +1,8 @@
 #ifndef MEDIASTRATEGY_HPP
 #define MEDIASTRATEGY_HPP
 
-#include <string>
+#include <iostream>
+#include <opencv2/opencv.hpp>
 
 class MediaStrategy {
  public:
