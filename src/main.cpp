@@ -40,15 +40,3 @@ int main(int argc, char* argv[]) {
 
   return 0;
 }
-
-// #include "VideoPlayer.hpp"
-
-// int main(int argc, char *argv[]) {
-//   std::string directoryPath = "../data/ds325/fast_circles/";
-//   std::string filenamePattern = "*_depth.tiff";
-//   const int frameRate = 30;
-//   VideoPlayer videoPlayer(frameRate);
-//   videoPlayer.play(directoryPath + filenamePattern);
-
-//   return 0;
-// }
