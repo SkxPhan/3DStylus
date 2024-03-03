@@ -3,14 +3,13 @@
 
 #include "MediaStrategy.hpp"
 
-class VideoPlayer : public MediaStrategy
-{
-public:
-    VideoPlayer(int frameRate);
-    void play(const std::string &path) override;
+class VideoPlayer : public MediaStrategy {
+ public:
+  VideoPlayer(int frameRate);
+  void play(const std::string &path) override;
 
-private:
-    int frameRate;
+ private:
+  int frameRate;
 };
 
-#endif // VIDEOPLAYER_HPP
+#endif  // VIDEOPLAYER_HPP
