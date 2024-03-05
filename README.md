@@ -1,4 +1,4 @@
-# 3DStylus - 3D Pointer and Simple Stroke Recognition (ongoing)
+# 3DStylus: 3D Pointer and Simple Stroke Recognition (ongoing)
 
 ## Overview
 
