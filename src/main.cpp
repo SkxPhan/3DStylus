@@ -25,6 +25,15 @@ int main(int argc, char* argv[]) {
     Mat kernel{getStructuringElement(MORPH_RECT, Size(5, 5))};
     morphologyEx(thresholdedImage, thresholdedImage, MORPH_OPEN, kernel);
 
+    // To get a binary mask
+    threshold(thresholdedImage, thresholdedImage, 128, 255, THRESH_BINARY);
+
+    // Detect center of mass
+    Moments moments = cv::moments(thresholdedImage, true);
+    double cx = moments.m10 / moments.m00;
+    double cy = moments.m01 / moments.m00;
+    cv::circle(frame, cv::Point(cx, cy), 3, cv::Scalar(0, 0, 255), -1);
+
     Mat combinedFrame;
     cvtColor(thresholdedImage, thresholdedImage, COLOR_GRAY2BGR);
     hconcat(frame, thresholdedImage, combinedFrame);
