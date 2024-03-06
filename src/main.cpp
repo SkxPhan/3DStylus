@@ -23,9 +23,7 @@ int main(int argc, char* argv[]) {
     Mat thresholdedImage;
     removeBackgroundDepthPixels(frame, thresholdedImage);
 
-    // Use background subtractor to keep the moving pixels only
-    auto bgsubtractor{createBackgroundSubtractorMOG2()};
-    bgsubtractor->apply(thresholdedImage, thresholdedImage);
+    bitwise_not(thresholdedImage, thresholdedImage);
 
     threshold(thresholdedImage, thresholdedImage, 128, 255, THRESH_BINARY);
 

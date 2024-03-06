@@ -43,16 +43,6 @@ int findIntensityWithHighestFrequency(const cv::Mat& hist) {
   return maxIntensity;
 }
 
-// auto maxFreq = 5;
-// auto maxIntensity = 255;
-// for (int i = 1; i < hist.rows; i++) {
-//   if (hist.at<int>(i) >= maxFreq) {
-//     maxIntensity = i;
-//     maxFreq = hist.at<int>(i);
-//     break;
-//   }
-// }
-
 cv::Point getCentroid(const cv::Mat& src, bool binaryImage) {
   cv::Moments moments = cv::moments(src, binaryImage);
   return cv::Point(moments.m10 / moments.m00, moments.m01 / moments.m00);
