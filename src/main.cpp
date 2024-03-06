@@ -6,7 +6,7 @@
 using namespace cv;
 
 int main(int argc, char* argv[]) {
-  const std::string_view path = "../data/ds536/circle_ccw/";
+  const std::string_view path = "../data/ds536/rectangle_cw/";
   const std::string_view extension = ".tif";
 
   auto i = 0;
@@ -43,23 +43,7 @@ int main(int argc, char* argv[]) {
     Mat hist;
     getHistogramDepthPixels(maskedImage, hist);
 
-    auto maxVal = 255;
-    for (int i = hist.rows - 1; i > 0; --i) {
-      if (hist.at<int>(i) > 10) {
-        maxVal = i;
-        break;
-      }
-    }
-
-    auto maxFreq = 5;
-    auto maxIntensity = 255;
-    for (int i = 1; i < hist.rows; i++) {
-      if (hist.at<float>(i) >= maxFreq) {
-        maxIntensity = i;
-        maxFreq = hist.at<float>(i);
-        break;
-      }
-    }
+    auto maxIntensity = findIntensityWithHighestFrequency(hist);
 
     threshold(maskedImage, maskedImage, maxIntensity, 255, THRESH_BINARY);
 

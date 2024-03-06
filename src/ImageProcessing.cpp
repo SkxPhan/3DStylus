@@ -29,18 +29,29 @@ void getHistogramDepthPixels(const cv::Mat& src, cv::Mat& hist,
   cv::calcHist(&src, 1, 0, binaryMask, hist, 1, &histSize, &histRange);
 }
 
-auto findIntensityWithHighestFrequency(const cv::Mat& hist) {
-  auto maxFreq = 0;
-  auto maxIntensity = 0;
+int findIntensityWithHighestFrequency(const cv::Mat& hist) {
+  int maxFreq = 5;
+  int maxIntensity = 255;
   // Iterate from 1 to 254 to exclude endpoints
-  for (auto i = 1; i < hist.rows - 1; i++) {
+  for (int i = 1; i < hist.rows - 1; i++) {
     if (hist.at<int>(i) >= maxFreq) {
       maxIntensity = i;
       maxFreq = hist.at<int>(i);
+      break;
     }
   }
   return maxIntensity;
 }
+
+// auto maxFreq = 5;
+// auto maxIntensity = 255;
+// for (int i = 1; i < hist.rows; i++) {
+//   if (hist.at<int>(i) >= maxFreq) {
+//     maxIntensity = i;
+//     maxFreq = hist.at<int>(i);
+//     break;
+//   }
+// }
 
 cv::Point getCentroid(const cv::Mat& src, bool binaryImage) {
   cv::Moments moments = cv::moments(src, binaryImage);
@@ -49,13 +60,4 @@ cv::Point getCentroid(const cv::Mat& src, bool binaryImage) {
 
 void drawCentroid(cv::Mat& src, cv::Point centroid) {
   cv::circle(src, centroid, 3, cv::Scalar(0), -1);
-}
-
-void displayFrames(const std::vector<cv::Mat>& frames) {
-  // Concatenate the frames horizontally
-  cv::Mat combinedFrame;
-  cv::hconcat(frames, combinedFrame);
-
-  // Display the stitched image
-  cv::imshow("Frames", combinedFrame);
 }
