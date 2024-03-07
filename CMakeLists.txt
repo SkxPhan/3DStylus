@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.12)
-project(OpenCVExample)
+
+project(3DStylus CXX)
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Find OpenCV package
 find_package(OpenCV REQUIRED)
@@ -10,12 +14,10 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 # Specify the include directories
 include_directories(include)
 
-# Create the executable
-add_executable(main
-    src/ImagePlayer.cpp
-    src/VideoPlayer.cpp
-    src/main.cpp
-)
+# Collect source files
+file(GLOB SOURCES "src/*.cpp")
+# Create an executable target
+add_executable(main ${SOURCES})
 
 # Link the executable with OpenCV libraries
 target_link_libraries(main ${OpenCV_LIBS})
