@@ -25,8 +25,6 @@ int main(int argc, char* argv[]) {
 
     bitwise_not(thresholdedImage, thresholdedImage);
 
-    threshold(thresholdedImage, thresholdedImage, 128, 255, THRESH_BINARY);
-
     // Remove noise
     applyMorphologicalOperation(thresholdedImage, thresholdedImage,
                                 cv::MORPH_OPEN, 5);
