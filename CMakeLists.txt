@@ -47,13 +47,13 @@ if (${ENABLE_DEV})
   list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/build/_deps/catch2-src/extras)
 
   enable_testing()
-  add_executable(test_dollar tests/testDollar.cpp)
-  target_compile_features(test_dollar PUBLIC cxx_std_17)
-  target_link_libraries(test_dollar PRIVATE Catch2::Catch2WithMain dollar pugixml::pugixml)
+
+  file(GLOB TEST_SOURCES "tests/*.cpp")
+  add_executable(run_test ${TEST_SOURCES})
+  target_compile_features(run_test PUBLIC cxx_std_17)
+  target_link_libraries(run_test PRIVATE Catch2::Catch2WithMain dollar pugixml::pugixml)
 
   include(CTest)
   include(Catch)
-  catch_discover_tests(test_dollar)
-  # add_test(NAME test_dollar COMMAND ${CMAKE_BINARY_DIR}/test_dollar WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-  
+  catch_discover_tests(run_test)
 endif()
