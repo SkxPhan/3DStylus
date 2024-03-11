@@ -1,9 +1,17 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.20)
 
-project(3DStylus CXX)
+project(3DStylus)
+
+option(ENABLE_DEV "Enable tests and other dev related features" ON)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include(cmake/CPM.cmake)
+
+add_library(dollar include/dollar.hpp src/dollar.cpp)
+target_include_directories(dollar PUBLIC include)
+target_compile_features(dollar PUBLIC cxx_std_23)
 
 # Find OpenCV package
 find_package(OpenCV REQUIRED)
@@ -18,6 +26,34 @@ include_directories(include)
 file(GLOB SOURCES "src/*.cpp")
 # Create an executable target
 add_executable(main ${SOURCES})
+target_link_libraries(main ${OpenCV_LIBS} dollar)
 
-# Link the executable with OpenCV libraries
-target_link_libraries(main ${OpenCV_LIBS})
+if (${ENABLE_DEV})
+  CPMAddPackage("gh:catchorg/Catch2@3.4.0")
+  CPMAddPackage(
+    NAME Format.cmake
+    VERSION 1.7.3
+    GITHUB_REPOSITORY TheLartians/Format.cmake
+    OPTIONS 
+        # set to yes skip cmake formatting
+        "FORMAT_SKIP_CMAKE YES"
+  )
+  CPMAddPackage(
+    NAME pugixml
+    VERSION 1.14
+    GITHUB_REPOSITORY zeux/pugixml
+  )
+
+  list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/build/_deps/catch2-src/extras)
+
+  enable_testing()
+
+  file(GLOB TEST_SOURCES "tests/*.cpp")
+  add_executable(run_test ${TEST_SOURCES})
+  target_compile_features(run_test PUBLIC cxx_std_17)
+  target_link_libraries(run_test PRIVATE Catch2::Catch2WithMain dollar pugixml::pugixml)
+
+  include(CTest)
+  include(Catch)
+  catch_discover_tests(run_test)
+endif()
