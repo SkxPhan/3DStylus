@@ -29,6 +29,8 @@ add_executable(main ${SOURCES})
 target_link_libraries(main ${OpenCV_LIBS} dollar)
 
 if (${ENABLE_DEV})
+  enable_testing()
+  
   CPMAddPackage("gh:catchorg/Catch2@3.4.0")
   CPMAddPackage(
     NAME Format.cmake
@@ -46,14 +48,11 @@ if (${ENABLE_DEV})
 
   list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/build/_deps/catch2-src/extras)
 
-  enable_testing()
-
   file(GLOB TEST_SOURCES "tests/*.cpp")
   add_executable(run_test ${TEST_SOURCES})
   target_compile_features(run_test PUBLIC cxx_std_17)
   target_link_libraries(run_test PRIVATE Catch2::Catch2WithMain dollar pugixml::pugixml)
 
-  include(CTest)
   include(Catch)
   catch_discover_tests(run_test)
 endif()
