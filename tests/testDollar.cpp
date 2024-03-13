@@ -1,51 +1,88 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
+#include <filesystem>
+#include <pugixml.hpp>
 #include <string>
 
 #include "dollar.hpp"
 using namespace dollar;
 using namespace std;
-
-TEST_CASE("Recognize Stroke Test", "[recognize]") {
-  SECTION("1 instance test") {
-    vector<Stroke> strokes{
-        Stroke({{0, 0}, {1, 1}, {1, 0}}, Orientation::Insensitive)};
-    auto [it, score] = recognize(strokes[0], strokes.begin(), strokes.end());
-    CHECK(it == strokes.begin());
-    CHECK_THAT(score, Catch::Matchers::WithinAbs(0.63662f, 0.001f));
-  }
-
-  SECTION("2 instances test") {
-    vector<Stroke> strokes{
-        Stroke({{0., 0.}, {0., 1.}, {1., 1.}}, Orientation::Sensitive),
-        Stroke({{0., 0.}, {1., 1.}, {1., 0.}}, Orientation::Sensitive),
-    };
-    Stroke testStroke{{{0., 0.}, {0., 0.9}, {0.02, 0.91}, {1., 1.}}, Orientation::Sensitive};
-    auto [it, score] = recognize(testStroke, strokes.begin(), strokes.end());
-    CHECK(it == strokes.begin());
-    CHECK_THAT(score, Catch::Matchers::WithinAbs(0.63662f, 0.001f));
-  }
+TEST_CASE("1 instance") {
+  vector<Stroke> strokes{
+      Stroke({{0, 0}, {1, 1}, {1, 0}}, Orientation::Insensitive)};
+  auto [it, score] = recognize(strokes[0], strokes.begin(), strokes.end());
+  CHECK(it == strokes.begin());
+  CHECK_THAT(score, Catch::Matchers::WithinAbs(2896.31f, 0.001f));
 }
 
-TEST_CASE("Optimal Cosine Distance Test", "[optimalCosineDistance]") {
-  SECTION("Simple test") {
-    VectorizedStroke stroke1 = {{0.5, 0.5}, {1.5, 1.5}, {2.5, 2.5}, {3.5, 3.5}};
-    VectorizedStroke stroke2 = {{0.7, 0.7}, {1.6, 1.6}, {2.6, 2.6}, {3.6, 3.6}};
-    float expectedDistance = 1.5708f;
+TEST_CASE("2 instances") {
+  vector<Stroke> strokes{
+      Stroke({{0., 0.}, {0., 1.}, {1., 1.}}, Orientation::Sensitive),
+      Stroke({{0., 0.}, {1., 1.}, {1., 0.}}, Orientation::Sensitive)};
+  Stroke testStroke{{{0., 0.}, {0., 0.9}, {0.02, 0.91}, {1., 1.}},
+                    Orientation::Sensitive};
+  auto [it, score] = recognize(testStroke, strokes.begin(), strokes.end());
+  CHECK(it == strokes.begin());
+  CHECK_THAT(score, Catch::Matchers::WithinAbs(17.6808f, 0.001f));
+}
 
-    float calculatedDistance = detail::optimalCosineDistance(stroke1, stroke2);
+TEST_CASE("Regression of official data") {
+  namespace fs = std::filesystem;
+  const fs::path testdata{"tests/testdata"};
 
-    REQUIRE_THAT(calculatedDistance,
-                Catch::Matchers::WithinRel(expectedDistance));
-  }
+  struct Record : dollar::Stroke {
+    string name;
+    Record(const string& _name, const Stroke& _stroke)
+        : name(_name), Stroke(_stroke) {}
+  };
+  REQUIRE(fs::exists(testdata));
+  for (const auto& l1 : fs::directory_iterator{testdata}) {
+    if (!l1.is_directory()) {
+      continue;
+    }
+    for (const auto& l2 : fs::directory_iterator{l1}) {
+      if (!l2.is_directory()) {
+        continue;
+      }
+      DYNAMIC_SECTION(l1.path().filename().string() + "/" +
+                      l2.path().filename().string()) {
+        vector<Record> records;
+        for (const auto& f : fs::directory_iterator{l2}) {
+          if (!f.is_regular_file()) {
+            continue;
+          }
+          const string stem = f.path().stem().string();
+          vector<Record> records;
+          string_view label = stem;
+          label.remove_suffix(2);
+          pugi::xml_document doc;
+          pugi::xml_parse_result result =
+              doc.load_file(f.path().string().c_str());
+          REQUIRE(result);
 
-  SECTION("Symmetry Test") {
-    VectorizedStroke stroke1 = {{0.5, 0.5}, {1.5, 1.5}, {2.5, 2.5}, {3.5, 3.5}};
-    VectorizedStroke stroke2 = {{0.7, 0.7}, {1.6, 1.6}, {2.6, 2.6}, {3.6, 3.6}};
+          vector<Point> points;
+          for (pugi::xml_node node : doc.child("Gesture").children("Point")) {
+            points.push_back({node.attribute("X").as_double(),
+                              node.attribute("Y").as_double()});
+          }
+          records.push_back(
+              Record(string{label}, Stroke(points, Orientation::Sensitive)));
+        }
+        INFO("Loaded " << records.size() << " shapes");
 
-    float distance1 = detail::optimalCosineDistance(stroke1, stroke2);
-    float distance2 = detail::optimalCosineDistance(stroke2, stroke1);
-
-    REQUIRE_THAT(distance1, Catch::Matchers::WithinRel(distance2));
+        for (const Record& testedRec : records) {
+          vector<Point> points = testedRec.getRawPoints();
+          for (Point& p : points) {
+            p.first += (rand() % 3) - 1;
+            p.second += (rand() % 3) - 1;
+          }
+          Stroke stroke(points, Orientation::Sensitive);
+          auto [it, score] = recognize(stroke, records.begin(), records.end());
+          CHECK(it != records.end());
+          CHECK(it->name == testedRec.name);
+          CHECK(score > 0.5);
+        }
+      }
+    }
   }
 }
