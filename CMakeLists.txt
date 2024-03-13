@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 project(3DStylus)
 
-option(ENABLE_DEV "Enable tests and other dev related features" ON)
+option(ENABLE_DEV "Enable tests and other dev related features" OFF)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -55,4 +55,6 @@ if (${ENABLE_DEV})
 
   include(Catch)
   catch_discover_tests(run_test)
+
+  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/tests/testdata DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/tests)
 endif()
