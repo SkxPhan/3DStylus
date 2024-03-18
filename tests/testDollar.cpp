@@ -7,6 +7,7 @@
 #include "dollar.hpp"
 using namespace dollar;
 using namespace std;
+
 TEST_CASE("1 instance") {
   vector<Stroke> strokes{
       Stroke({{0, 0}, {1, 1}, {1, 0}}, Orientation::Insensitive)};
@@ -52,7 +53,6 @@ TEST_CASE("Regression of official data") {
             continue;
           }
           const string stem = f.path().stem().string();
-          vector<Record> records;
           string_view label = stem;
           label.remove_suffix(2);
           pugi::xml_document doc;
@@ -65,8 +65,10 @@ TEST_CASE("Regression of official data") {
             points.push_back({node.attribute("X").as_double(),
                               node.attribute("Y").as_double()});
           }
-          records.push_back(
-              Record(string{label}, Stroke(points, Orientation::Sensitive)));
+          if (!points.empty()) {
+            records.push_back(
+                Record(string{label}, Stroke(points, Orientation::Sensitive)));
+          }
         }
         INFO("Loaded " << records.size() << " shapes");
 

@@ -1,3 +1,6 @@
+#ifndef IMAGE_PROCESSING_H
+#define IMAGE_PROCESSING_H
+
 #include <opencv2/opencv.hpp>
 
 void removeBackgroundDepthPixels(const cv::Mat& src, cv::Mat& dst);
@@ -13,3 +16,5 @@ void applyMorphologicalOperation(const cv::Mat& src, cv::Mat& dst,
 cv::Point getCentroid(const cv::Mat& src, bool binaryImage = true);
 
 void drawCentroid(cv::Mat& src, cv::Point centroid);
+
+#endif // IMAGE_PROCESSING_H

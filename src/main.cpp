@@ -2,14 +2,19 @@
 #include <string_view>
 
 #include "ImageProcessing.hpp"
+#include "StrokeDetector.hpp"
+#include "dollar.hpp"
 
 using namespace cv;
 
 int main(int argc, char* argv[]) {
-  const std::string_view path = "../data/ds536/rectangle_cw/";
-  const std::string_view extension = ".tif";
+  const std::string_view path = "../data/ds325/fast_circles/";
+  const std::string_view extension = ".tiff";
 
   auto i = 0;
+
+  StrokeDetector detector("../tests/testdata");
+  std::vector<std::pair<float, float>> sample;
 
   while (true) {
     std::ostringstream filename;
@@ -46,6 +51,9 @@ int main(int argc, char* argv[]) {
     // Find and draw centroid
     cv::Point centroid = getCentroid(maskedImage, false);
     drawCentroid(frame, centroid);
+    if (centroid.x || centroid.y) {
+      sample.push_back({centroid.x, centroid.y});
+    }
 
     Mat combinedFrame;
     hconcat(frame, thresholdedImage, combinedFrame);
@@ -58,6 +66,10 @@ int main(int argc, char* argv[]) {
   }
 
   destroyAllWindows();
+
+  dollar::Stroke testStroke{sample, dollar::Orientation::Sensitive};
+
+  std::cout << detector.recognize(testStroke) << '\n';
 
   return 0;
 }

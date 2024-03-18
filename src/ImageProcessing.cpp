@@ -14,7 +14,7 @@ void removeBackgroundDepthPixels(const cv::Mat& src, cv::Mat& dst) {
   cv::Mat hist;
   getHistogramDepthPixels(src, hist);
 
-  cv::threshold(src, dst, 3, 255, cv::THRESH_BINARY);
+  cv::threshold(src, dst, 2, 255, cv::THRESH_BINARY);
   // cv::adaptiveThreshold(src, dst, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C,
   //                       cv::THRESH_BINARY_INV, 11, 2);
   // compute histogram
