@@ -94,7 +94,10 @@
 			"memory_resource": "cpp",
 			"random": "cpp",
 			"type_traits": "cpp",
-			"utility": "cpp"
+			"utility": "cpp",
+			"numeric": "cpp",
+			"format": "cpp",
+			"filesystem": "cpp"
 		}
 	}
 }
