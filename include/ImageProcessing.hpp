@@ -17,4 +17,7 @@ cv::Point getCentroid(const cv::Mat& src, bool binaryImage = true);
 
 void drawCentroid(cv::Mat& src, cv::Point centroid);
 
-#endif // IMAGE_PROCESSING_H
+bool isMoving(const std::vector<std::pair<float, float>>& points,
+              int nbrPreviousPoint = 20);
+
+#endif  // IMAGE_PROCESSING_H

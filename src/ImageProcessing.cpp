@@ -1,5 +1,7 @@
 #include "ImageProcessing.hpp"
 
+#include <cmath>
+
 void applyMorphologicalOperation(const cv::Mat& src, cv::Mat& dst,
                                  cv::MorphTypes op, int kernelSize) {
   if (kernelSize % 2 == 0) {
@@ -14,11 +16,17 @@ void removeBackgroundDepthPixels(const cv::Mat& src, cv::Mat& dst) {
   cv::Mat hist;
   getHistogramDepthPixels(src, hist);
 
-  cv::threshold(src, dst, 2, 255, cv::THRESH_BINARY);
-  // cv::adaptiveThreshold(src, dst, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C,
-  //                       cv::THRESH_BINARY_INV, 11, 2);
-  // compute histogram
-  // get only the pixels with highest frequency that are not 255
+  int first_peak_value = 255;
+  for (int i = hist.rows - 1; i > 0; --i) {
+    if (hist.at<float>(i) > 1000) {
+      first_peak_value = i;
+      break;
+    }
+  }
+  // std::cout << first_peak_value << ", " << hist.at<float>(first_peak_value)
+  //           << '\n';
+
+  cv::threshold(src, dst, 251, 255, cv::THRESH_BINARY);
 }
 
 void getHistogramDepthPixels(const cv::Mat& src, cv::Mat& hist,
@@ -50,4 +58,16 @@ cv::Point getCentroid(const cv::Mat& src, bool binaryImage) {
 
 void drawCentroid(cv::Mat& src, cv::Point centroid) {
   cv::circle(src, centroid, 3, cv::Scalar(0), -1);
+}
+
+bool isMoving(const std::vector<std::pair<float, float>>& points,
+              int nbrPreviousPoint) {
+  if (points.size() > nbrPreviousPoint) {
+    std::pair<float, float> lastPoint = points.back();
+    std::pair<float, float> previousPoint =
+        points[points.size() - nbrPreviousPoint];
+    return std::sqrt(std::pow(lastPoint.first - previousPoint.first, 2) +
+                     std::pow(lastPoint.second - previousPoint.second, 2)) > 4;
+  }
+  return true;
 }
