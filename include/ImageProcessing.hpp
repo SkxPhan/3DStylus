@@ -13,6 +13,8 @@ int findIntensityWithHighestFrequency(const cv::Mat& hist);
 void applyMorphologicalOperation(const cv::Mat& src, cv::Mat& dst,
                                  cv::MorphTypes op, int kernelSize);
 
+void applyHandSegmentation(const cv::Mat& src, cv::Mat& dst);
+
 cv::Point getCentroid(const cv::Mat& src, bool binaryImage = true);
 
 void drawCentroid(cv::Mat& src, cv::Point centroid);

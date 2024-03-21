@@ -23,8 +23,6 @@ void removeBackgroundDepthPixels(const cv::Mat& src, cv::Mat& dst) {
       break;
     }
   }
-  // std::cout << first_peak_value << ", " << hist.at<float>(first_peak_value)
-  //           << '\n';
 
   cv::threshold(src, dst, 251, 255, cv::THRESH_BINARY);
 }
@@ -40,7 +38,6 @@ void getHistogramDepthPixels(const cv::Mat& src, cv::Mat& hist,
 int findIntensityWithHighestFrequency(const cv::Mat& hist) {
   int maxFreq = 5;
   int maxIntensity = 255;
-  // Iterate from 1 to 254 to exclude endpoints
   for (int i = 1; i < hist.rows - 1; i++) {
     if (hist.at<int>(i) >= maxFreq) {
       maxIntensity = i;
@@ -57,7 +54,7 @@ cv::Point getCentroid(const cv::Mat& src, bool binaryImage) {
 }
 
 void drawCentroid(cv::Mat& src, cv::Point centroid) {
-  cv::circle(src, centroid, 3, cv::Scalar(0), -1);
+  cv::circle(src, centroid, 3, cv::Scalar(255), -1);
 }
 
 bool isMoving(const std::vector<std::pair<float, float>>& points,
@@ -66,8 +63,17 @@ bool isMoving(const std::vector<std::pair<float, float>>& points,
     std::pair<float, float> lastPoint = points.back();
     std::pair<float, float> previousPoint =
         points[points.size() - nbrPreviousPoint];
-    return std::sqrt(std::pow(lastPoint.first - previousPoint.first, 2) +
-                     std::pow(lastPoint.second - previousPoint.second, 2)) > 4;
+    return std::pow(lastPoint.first - previousPoint.first, 2) +
+               std::pow(lastPoint.second - previousPoint.second, 2) >
+           16;
   }
   return true;
+}
+
+void applyHandSegmentation(const cv::Mat& src, cv::Mat& dst) {
+  cv::Mat hist;
+  getHistogramDepthPixels(src, hist);
+  auto maxIntensity = findIntensityWithHighestFrequency(hist);
+  threshold(src, dst, maxIntensity, 255, cv::THRESH_BINARY);
+  applyMorphologicalOperation(dst, dst, cv::MORPH_CLOSE, 5);
 }

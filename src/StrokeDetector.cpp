@@ -1,9 +1,5 @@
 #include "StrokeDetector.hpp"
 
-StrokeDetector::StrokeDetector(std::string_view path) {
-  loadTemplateStrokes(path);
-}
-
 void StrokeDetector::loadTemplateStrokes(std::string_view path) {
   namespace fs = std::filesystem;
   const fs::path templatedata{path};
