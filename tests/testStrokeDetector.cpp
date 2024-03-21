@@ -9,6 +9,7 @@
 // getNumberOfTemplate
 
 // recognize
+
 TEST_CASE("Recognize Simple Shapes") {
   const std::string_view strokeTemplatePath = "tests/testdata";
   StrokeDetector detector;

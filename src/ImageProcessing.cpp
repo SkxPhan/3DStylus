@@ -16,13 +16,13 @@ void removeBackgroundDepthPixels(const cv::Mat& src, cv::Mat& dst) {
   cv::Mat hist;
   getHistogramDepthPixels(src, hist);
 
-  int first_peak_value = 255;
-  for (int i = hist.rows - 1; i > 0; --i) {
-    if (hist.at<float>(i) > 1000) {
-      first_peak_value = i;
-      break;
-    }
-  }
+//   int first_peak_value = 255;
+//   for (int i = hist.rows - 1; i > 0; --i) {
+//     if (hist.at<float>(i) > 1000) {
+//       first_peak_value = i;
+//       break;
+//     }
+//   }
 
   cv::threshold(src, dst, 251, 255, cv::THRESH_BINARY);
 }
