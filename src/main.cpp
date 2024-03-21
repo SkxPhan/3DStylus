@@ -8,61 +8,61 @@
 using namespace cv;
 
 int main(int argc, char* argv[]) {
-  const std::string_view path = "../data/ds325/fast_circles/";
-  const std::string_view extension = ".tiff";
+  const std::string sequencePath = "../data/ds536/rectangle_cw";
+  std::vector<std::string> imageFiles;
+  glob(sequencePath + "/*depth.tif", imageFiles);
 
-  auto i = 0;
+  const std::string_view strokeTemplatePath = "tests/testdata";
+  StrokeDetector detector;
+  detector.loadTemplateStrokes(strokeTemplatePath);
 
-  StrokeDetector detector("../tests/testdata");
-  std::vector<std::pair<float, float>> sample;
+  std::vector<dollar::Point> sample;
 
-  while (true) {
-    std::ostringstream filename;
-    filename << path << std::setw(6) << std::setfill('0') << i << "_depth"
-             << extension;
-    Mat frame = cv::imread(filename.str(), cv::IMREAD_GRAYSCALE);
+  for (const auto& imageFile : imageFiles) {
+    Mat frame = cv::imread(imageFile, cv::IMREAD_GRAYSCALE);
 
-    if (frame.empty()) break;
+    Mat invertedFrame;
+    bitwise_not(frame, invertedFrame);
 
-    // Remove far pixels
-    Mat thresholdedImage;
-    removeBackgroundDepthPixels(frame, thresholdedImage);
+    Mat openedFrame;
+    applyMorphologicalOperation(invertedFrame, openedFrame, cv::MORPH_OPEN, 5);
 
-    bitwise_not(thresholdedImage, thresholdedImage);
+    Mat foregroundMask;
+    removeBackgroundDepthPixels(openedFrame, foregroundMask);
 
-    // Remove noise
-    applyMorphologicalOperation(thresholdedImage, thresholdedImage,
-                                cv::MORPH_OPEN, 5);
+    Mat maskedFrame;
+    bitwise_and(invertedFrame, invertedFrame, maskedFrame, foregroundMask);
 
-    // Apply binary mask on original image
-    bitwise_not(frame, frame);
+    Mat handFrame;
+    applyHandSegmentation(maskedFrame, handFrame);
 
-    Mat maskedImage;
-    bitwise_and(frame, frame, maskedImage, thresholdedImage);
-
-    // Calculate histogram
-    Mat hist;
-    getHistogramDepthPixels(maskedImage, hist);
-
-    auto maxIntensity = findIntensityWithHighestFrequency(hist);
-
-    threshold(maskedImage, maskedImage, maxIntensity, 255, THRESH_BINARY);
-
-    // Find and draw centroid
-    cv::Point centroid = getCentroid(maskedImage, false);
+    cv::Point centroid = getCentroid(handFrame, false);
     drawCentroid(frame, centroid);
     if (centroid.x || centroid.y) {
       sample.push_back({centroid.x, centroid.y});
     }
 
+    if (centroid.x || centroid.y) {
+      sample.push_back({centroid.x, centroid.y});
+    } else {
+      sample.clear();
+    }
+    if (!isMoving(sample, 15)) {
+      if (sample.size() > 80) {
+        dollar::Stroke testStroke{sample, dollar::Orientation::Sensitive};
+        std::cout << "Detected stroke: " << detector.recognize(testStroke)
+                  << "\n";
+      }
+      sample.clear();
+    }
+
     Mat combinedFrame;
-    hconcat(frame, thresholdedImage, combinedFrame);
-    hconcat(combinedFrame, maskedImage, combinedFrame);
+    hconcat(frame, foregroundMask, combinedFrame);
+    hconcat(combinedFrame, maskedFrame, combinedFrame);
+    hconcat(combinedFrame, handFrame, combinedFrame);
     imshow("Depth video", combinedFrame);
 
     if (waitKey(1000 / 30) == 27) break;
-
-    i++;
   }
 
   destroyAllWindows();

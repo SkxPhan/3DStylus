@@ -97,7 +97,8 @@
 			"utility": "cpp",
 			"numeric": "cpp",
 			"format": "cpp",
-			"filesystem": "cpp"
+			"filesystem": "cpp",
+			"*.ipp": "cpp"
 		}
 	}
 }
