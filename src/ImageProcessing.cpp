@@ -13,16 +13,16 @@ void applyMorphologicalOperation(const cv::Mat& src, cv::Mat& dst,
 }
 
 void removeBackgroundDepthPixels(const cv::Mat& src, cv::Mat& dst) {
-  cv::Mat hist;
-  getHistogramDepthPixels(src, hist);
+  // cv::Mat hist;
+  // getHistogramDepthPixels(src, hist);
 
-//   int first_peak_value = 255;
-//   for (int i = hist.rows - 1; i > 0; --i) {
-//     if (hist.at<float>(i) > 1000) {
-//       first_peak_value = i;
-//       break;
-//     }
-//   }
+  // int first_peak_value = 255;
+  // for (int i = hist.rows - 1; i > 0; --i) {
+  //   if (hist.at<float>(i) > 1000) {
+  //     first_peak_value = i;
+  //     break;
+  //   }
+  // }
 
   cv::threshold(src, dst, 251, 255, cv::THRESH_BINARY);
 }
@@ -33,6 +33,14 @@ void getHistogramDepthPixels(const cv::Mat& src, cv::Mat& hist,
   float range[] = {0, 255};
   const float* histRange = {range};
   cv::calcHist(&src, 1, 0, binaryMask, hist, 1, &histSize, &histRange);
+}
+
+void applyHandSegmentation(const cv::Mat& src, cv::Mat& dst) {
+  cv::Mat hist;
+  getHistogramDepthPixels(src, hist);
+  auto maxIntensity = findIntensityWithHighestFrequency(hist);
+  threshold(src, dst, maxIntensity, 255, cv::THRESH_BINARY);
+  applyMorphologicalOperation(dst, dst, cv::MORPH_CLOSE, 5);
 }
 
 int findIntensityWithHighestFrequency(const cv::Mat& hist) {
@@ -68,12 +76,4 @@ bool isMoving(const std::vector<std::pair<float, float>>& points,
            16;
   }
   return true;
-}
-
-void applyHandSegmentation(const cv::Mat& src, cv::Mat& dst) {
-  cv::Mat hist;
-  getHistogramDepthPixels(src, hist);
-  auto maxIntensity = findIntensityWithHighestFrequency(hist);
-  threshold(src, dst, maxIntensity, 255, cv::THRESH_BINARY);
-  applyMorphologicalOperation(dst, dst, cv::MORPH_CLOSE, 5);
 }

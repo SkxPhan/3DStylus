@@ -38,9 +38,6 @@ int main(int argc, char* argv[]) {
 
     cv::Point centroid = getCentroid(handFrame, false);
     drawCentroid(frame, centroid);
-    if (centroid.x || centroid.y) {
-      sample.push_back({centroid.x, centroid.y});
-    }
 
     if (centroid.x || centroid.y) {
       sample.push_back({centroid.x, centroid.y});
@@ -58,7 +55,6 @@ int main(int argc, char* argv[]) {
 
     Mat combinedFrame;
     hconcat(frame, foregroundMask, combinedFrame);
-    hconcat(combinedFrame, maskedFrame, combinedFrame);
     hconcat(combinedFrame, handFrame, combinedFrame);
     imshow("Depth video", combinedFrame);
 
@@ -66,10 +62,6 @@ int main(int argc, char* argv[]) {
   }
 
   destroyAllWindows();
-
-  dollar::Stroke testStroke{sample, dollar::Orientation::Sensitive};
-
-  std::cout << detector.recognize(testStroke) << '\n';
 
   return 0;
 }

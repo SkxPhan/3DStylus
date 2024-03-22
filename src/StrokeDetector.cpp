@@ -56,4 +56,3 @@ std::string StrokeDetector::recognize(const dollar::Stroke& target) {
   }
   return label;
 }
-// @}
