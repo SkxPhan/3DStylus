@@ -1,5 +1,9 @@
 #include "StrokeDetector.hpp"
 
+#include <filesystem>
+#include <iostream>
+#include <pugixml.hpp>
+
 void StrokeDetector::loadTemplateStrokes(std::string_view path) {
   namespace fs = std::filesystem;
   const fs::path templatedata{path};
@@ -40,6 +44,34 @@ void StrokeDetector::loadTemplateStrokes(std::string_view path) {
 void StrokeDetector::addTemplate(dollar::Stroke templateStroke,
                                  std::string label) {
   m_templateStrokes.push_back({templateStroke, label});
+}
+
+void StrokeDetector::appendToBufferAndDetectStroke(dollar::Point p) {
+  if (p.first || p.second) {
+    m_buffer.push_back(p);
+  } else {
+    m_buffer.clear();
+  }
+  if (!isMoving(m_buffer, 15)) {
+    if (m_buffer.size() > 80) {
+      dollar::Stroke testStroke{m_buffer, dollar::Orientation::Sensitive};
+      std::cout << "Detected stroke: " << recognize(testStroke) << "\n";
+    }
+    m_buffer.clear();
+  }
+}
+
+bool StrokeDetector::isMoving(
+    const std::vector<std::pair<float, float>>& points, int nbrPreviousPoint) {
+  if (points.size() > nbrPreviousPoint) {
+    std::pair<float, float> lastPoint = points.back();
+    std::pair<float, float> previousPoint =
+        points[points.size() - nbrPreviousPoint];
+    return std::pow(lastPoint.first - previousPoint.first, 2) +
+               std::pow(lastPoint.second - previousPoint.second, 2) >
+           16;
+  }
+  return true;
 }
 
 std::string StrokeDetector::recognize(const dollar::Stroke& target) {
