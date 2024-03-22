@@ -3,6 +3,8 @@
 
 #include <opencv2/opencv.hpp>
 
+void detectForegroundHand(const cv::Mat& src, cv::Mat& dst);
+
 void applyMorphologicalOperation(const cv::Mat& src, cv::Mat& dst,
                                  cv::MorphTypes op, int kernelSize);
 
@@ -19,7 +21,6 @@ cv::Point getCentroid(const cv::Mat& src, bool binaryImage = true);
 
 void drawCentroid(cv::Mat& src, cv::Point centroid);
 
-bool isMoving(const std::vector<std::pair<float, float>>& points,
-              int nbrPreviousPoint = 20);
+void mergeFrames(const std::vector<cv::Mat>& frames, cv::Mat& combinedFrame);
 
 #endif  // IMAGE_PROCESSING_H

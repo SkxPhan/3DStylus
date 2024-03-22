@@ -1,6 +1,23 @@
 #include "ImageProcessing.hpp"
 
 #include <cmath>
+#include <stdexcept>
+
+void detectForegroundHand(const cv::Mat& src, cv::Mat& dst) {
+  cv::Mat invertedFrame;
+  bitwise_not(src, invertedFrame);
+
+  cv::Mat openedFrame;
+  applyMorphologicalOperation(invertedFrame, openedFrame, cv::MORPH_OPEN, 5);
+
+  cv::Mat foregroundMask;
+  removeBackgroundDepthPixels(openedFrame, foregroundMask);
+
+  cv::Mat maskedFrame;
+  bitwise_and(invertedFrame, invertedFrame, maskedFrame, foregroundMask);
+
+  applyHandSegmentation(maskedFrame, dst);
+}
 
 void applyMorphologicalOperation(const cv::Mat& src, cv::Mat& dst,
                                  cv::MorphTypes op, int kernelSize) {
@@ -65,15 +82,17 @@ void drawCentroid(cv::Mat& src, cv::Point centroid) {
   cv::circle(src, centroid, 3, cv::Scalar(255), -1);
 }
 
-bool isMoving(const std::vector<std::pair<float, float>>& points,
-              int nbrPreviousPoint) {
-  if (points.size() > nbrPreviousPoint) {
-    std::pair<float, float> lastPoint = points.back();
-    std::pair<float, float> previousPoint =
-        points[points.size() - nbrPreviousPoint];
-    return std::pow(lastPoint.first - previousPoint.first, 2) +
-               std::pow(lastPoint.second - previousPoint.second, 2) >
-           16;
+void mergeFrames(const std::vector<cv::Mat>& frames, cv::Mat& combinedFrame) {
+  if (frames.empty()) {
+    throw std::invalid_argument("No frames provided for merging");
   }
-  return true;
+
+  cv::Size firstFrameSize = frames[0].size();
+  combinedFrame = frames[0];
+  for (size_t i = 1; i < frames.size(); ++i) {
+    if (frames[i].size() != firstFrameSize) {
+      throw std::invalid_argument("Frames do not have the same dimensions");
+    }
+    hconcat(combinedFrame, frames[i], combinedFrame);
+  }
 }
