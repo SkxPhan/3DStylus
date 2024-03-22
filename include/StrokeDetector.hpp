@@ -1,12 +1,7 @@
 #ifndef STROKE_DETECTOR_H
 #define STROKE_DETECTOR_H
 
-#include <filesystem>
-#include <iostream>
-#include <pugixml.hpp>
 #include <string>
-#include <string_view>
-#include <utility>
 
 #include "dollar.hpp"
 

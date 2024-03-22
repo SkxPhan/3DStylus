@@ -1,8 +1,5 @@
 #include "ImageProcessing.hpp"
 
-#include <cmath>
-#include <stdexcept>
-
 void detectForegroundHand(const cv::Mat& src, cv::Mat& dst) {
   cv::Mat invertedFrame;
   bitwise_not(src, invertedFrame);

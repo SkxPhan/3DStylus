@@ -1,5 +1,4 @@
 #include <opencv2/opencv.hpp>
-#include <string_view>
 
 #include "ImageProcessing.hpp"
 #include "StrokeDetector.hpp"

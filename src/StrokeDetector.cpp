@@ -1,5 +1,9 @@
 #include "StrokeDetector.hpp"
 
+#include <filesystem>
+#include <iostream>
+#include <pugixml.hpp>
+
 void StrokeDetector::loadTemplateStrokes(std::string_view path) {
   namespace fs = std::filesystem;
   const fs::path templatedata{path};
